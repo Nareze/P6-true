@@ -8,10 +8,10 @@ const userSchema = mongoose.Schema({
     mainPepper : { type : String, required : true },
     imageUrl: { type: String, required : true  },
     heat : { type : Number, required : true },
-    likes : { type : Number, default : 0, required : true },
-    dislikes: { type : Number, default : 0, required : true  },
-    usersLiked : { type: [String], default : [], required : true },
-    usersDisliked : { type: [String], default : [], required : true }
+    likes : { type : Number, /* default : 0, required : true */ },
+    dislikes: { type : Number, /* default : 0, required : true */  },
+    usersLiked : { type: [String], /* default : [], required : true */ },
+    usersDisliked : { type: [String], /* default : [], required : true */ }
 });
 
 

@@ -40,5 +40,22 @@ exports.deleteProduct = (req, res, next) => {
         })
     })
     .catch(error => res.status(500).json({error}));
-}
+    }
+
+exports.modifyProduct = (req, res, next) => {
+    const productObject = req.file ?
+    {
+        ...JSON.parse(req.body.sauce),
+        imageUrl:`${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+    } : { ...req.body };
+
+    Product.updateOne({ _id : req.params.id }, { ...productObject, _id : req.params.id })
+    .then(() => res.status(200).json({message : 'Objet Modifié'}) )
+    .catch (error => res.status(400).json({ error }));
+
+    console.log("empl1 : " + req.body.product);
+    console.log("empl2 : " + productObject);
+    }
+
+
 
