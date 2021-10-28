@@ -6,7 +6,7 @@ const productCtrl = require('../controllers/product')
 const multer = require('../middleware/multer-config')
 
 
-router.get('/', auth, productCtrl.getAllProduct);
+router.get('/', auth, productCtrl.getAllProducts);
 router.get('/:id', auth, productCtrl.getOneProduct);
 router.post('/', auth, multer, productCtrl.createProduct);
 router.put('/:id', auth, multer, productCtrl.modifyProduct);

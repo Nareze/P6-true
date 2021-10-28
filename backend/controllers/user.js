@@ -1,10 +1,11 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const User = require("../models/User");
-
+const users = require("../models/user");
 
 const jwtToCrypt = require('crypto').randomBytes(64).toString('hex');
 console.log(jwtToCrypt);
+
+
 
 
 
@@ -12,7 +13,7 @@ exports.signup = (req, res, next) => {
   bcrypt
     .hash(req.body.password, 10)
     .then((hash) => {
-      const user = new User({
+      const user = new users({
         email: req.body.email,
         password: hash,
       });
@@ -25,7 +26,7 @@ exports.signup = (req, res, next) => {
 };
 
 exports.login = (req, res, next) => {
-  User.findOne({ email: req.body.email})
+  users.findOne({ email: req.body.email})
   .then ((user) =>{
       if(!user){
           res.status(401).json({message:"Utilisateur non trouvé"});

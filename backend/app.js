@@ -6,6 +6,11 @@ dotenv.config();
 
 const mongoose = require("mongoose");
 const path = require('path');
+const morgan = require('morgan');
+app.use(morgan('dev'));
+const helmet = require('helmet');
+app.use(helmet());
+
 
 const userRoutes = require("./routes/user")
 const productRoutes = require("./routes/product")
@@ -34,8 +39,12 @@ mongoose.connect(process.env.MONGO_URL,
   .catch(() => console.log('Connexion à MongoDB échouée !'));
 
   
+
 app.use('/images', express.static(path.join(__dirname, 'images')));
+
 app.use('/api/sauces', productRoutes);
 app.use('/api/auth', userRoutes);
+
+
 
 module.exports = app;
