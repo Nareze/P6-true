@@ -2,21 +2,35 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const users = require("../models/user");
 
-const jwtToCrypt = require('crypto').randomBytes(64).toString('hex');
-console.log(jwtToCrypt);
+const cryptoJS = require("crypto-js");
+const dotenv = require("dotenv");
+dotenv.config();
+
+
+// const toHash = require('crypto').randomBytes(64).toString('hex');
+// console.log(toHash);
 
 
 
 
 
 exports.signup = (req, res, next) => {
+
+
+  const emailtoCrypt = cryptoJS.SHA256(req.body.email, process.env.EMAIL_SECRET).toString();
+  
+
+
   bcrypt
     .hash(req.body.password, 10)
     .then((hash) => {
       const user = new users({
-        email: req.body.email,
+        email: emailtoCrypt,
         password: hash,
       });
+
+    console.log("contenu user //////// : " + user)
+      
       user
         .save()
         .then(() => res.status(201).json({ message: "Utilisateur créé !" }))
@@ -25,12 +39,20 @@ exports.signup = (req, res, next) => {
     .catch((error) => res.status(500).json({ error }));
 };
 
+
+
 exports.login = (req, res, next) => {
-  users.findOne({ email: req.body.email})
-  .then ((user) =>{
-      if(!user){
-          res.status(401).json({message:"Utilisateur non trouvé"});
-  }
+
+
+const emailtoCrypt = cryptoJS.SHA256(req.body.email, process.env.EMAIL_SECRET).toString();
+console.log("contenu chiffrement //////// : " + emailtoCrypt)
+
+  users.findOne({ email: emailtoCrypt })
+  .then ((user) => {
+
+     if(!user){
+      res.status(401).json({message:"Utilisateur non trouvé"});
+    }
 
   return bcrypt.compare(req.body.password, user.password)
   .then(valid => {
