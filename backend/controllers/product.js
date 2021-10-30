@@ -14,12 +14,14 @@ exports.getOneProduct = (req, res, next) => {
 };
 
 exports.createProduct = (req, res, next) => {
-  const productObject = JSON.parse(req.body.sauce);
+  const productObject = JSON.parse(
+    req.body.sauce
+  ); /* on convertis la requete entrante en objet JSON */
   delete productObject._id;
   const product = new Products({
     ...productObject,
     imageUrl: `${req.protocol}://${req.get("host")}/images/${
-      req.file.filename
+      req.file.filename /* création de l'url de la nouvelle image */
     }`,
   });
   console.log("product : " + product);
@@ -32,17 +34,20 @@ exports.createProduct = (req, res, next) => {
 exports.modifyProduct = (req, res, next) => {
   const productObject = req.file
     ? {
+        /* dans le cas ou l'ont doit modifier l'objet > on convertit la requete entrante et on créee l'url de l'image */
         ...JSON.parse(req.body.sauce),
         imageUrl: `${req.protocol}://${req.get("host")}/images/${
           req.file.filename
         }`,
       }
-    : { ...req.body };
+    : {
+        ...req.body,
+      }; /* dans le cas ou rien n'est modifié on laisse le corps de la requête */
 
   Products.findOne({ _id: req.params.id })
     .then((sauce) => {
       if (req.file == null) {
-        //Quand la photo n'est pas changée (uploadée)
+        //Si la photo n'est pas changée (uploadée)
         Products.updateOne(
           { _id: req.params.id },
           { ...productObject, _id: req.params.id }
@@ -90,6 +95,7 @@ exports.reviewProduct = (req, res, next) => {
     case (like = 1):
       Products.findOneAndUpdate(
         { _id: req.params.id },
+        /* on ajoute incrémente un like puis ajout dans le array usersLiked */
         { $inc: { likes: 1 }, $push: { usersLiked: user } }
       )
         .then(() => res.status(200).json({ message: "Like ajouté" }))
@@ -110,6 +116,7 @@ exports.reviewProduct = (req, res, next) => {
         .then((sauce) => {
           console.log("sauce : " + sauce);
           if (sauce.usersLiked.includes(user)) {
+            /* si le array usersLiked possède un j'aime alors on décremente et on retire le j'aime du array */
             console.log("User : " + sauce.usersLiked);
             Products.findOneAndUpdate(
               { _id: req.params.id },
