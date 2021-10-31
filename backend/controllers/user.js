@@ -7,7 +7,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const toHash = require('crypto').randomBytes(64).toString('hex');
-console.log(toHash);    /* contenu à hasher */
+console.log(toHash);    /* ajout aux clés secretes */
 
 exports.signup = (req, res, next) => {
   const emailtoCrypt = cryptoJS

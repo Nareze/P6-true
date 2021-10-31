@@ -34,7 +34,7 @@ exports.createProduct = (req, res, next) => {
 exports.modifyProduct = (req, res, next) => {
   const productObject = req.file
     ? {
-        /* dans le cas ou l'ont doit modifier l'objet > on convertit la requete entrante et on créee l'url de l'image */
+        /* dans le cas ou l'ont doit modifier l'objet, on convertit la requete entrante et on créee l'url de l'image */
         ...JSON.parse(req.body.sauce),
         imageUrl: `${req.protocol}://${req.get("host")}/images/${
           req.file.filename
@@ -42,12 +42,13 @@ exports.modifyProduct = (req, res, next) => {
       }
     : {
         ...req.body,
-      }; /* dans le cas ou rien n'est modifié on laisse le corps de la requête */
+      }; /* dans le cas ou l'image n'est pas remplacée ,on laisse le corps de la requête (si la description de la sauce est modifié) */
 
   Products.findOne({ _id: req.params.id })
+  /* on supprime la photo remplacée */
     .then((sauce) => {
       if (req.file == null) {
-        //Si la photo n'est pas changée (uploadée)
+        /* si la photo n'est pas changée (description de la photo modifié) */
         Products.updateOne(
           { _id: req.params.id },
           { ...productObject, _id: req.params.id }
@@ -56,7 +57,7 @@ exports.modifyProduct = (req, res, next) => {
           .catch((error) => console.log(error));
         console.log("no change");
       } else {
-        //Si la photo est uploadée > changer la photo et supprimer celle dans le server
+        /* si une photo est ajouté on remplace la photo est on supprime la photo remplacé */
         const filename = sauce.imageUrl.split("/images/")[1];
         fs.unlink(`images/${filename}`, () => {
           Products.updateOne(
@@ -95,7 +96,7 @@ exports.reviewProduct = (req, res, next) => {
     case (like = 1):
       Products.findOneAndUpdate(
         { _id: req.params.id },
-        /* on ajoute incrémente un like puis ajout dans le array usersLiked */
+        /* on ajoute incrémente un like puis on ajoute l'userId dans le array usersLiked */
         { $inc: { likes: 1 }, $push: { usersLiked: user } }
       )
         .then(() => res.status(200).json({ message: "Like ajouté" }))
