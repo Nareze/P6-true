@@ -45,7 +45,7 @@ exports.modifyProduct = (req, res, next) => {
       }; /* dans le cas ou l'image n'est pas remplacée ,on laisse le corps de la requête (si la description de la sauce est modifié) */
 
   Products.findOne({ _id: req.params.id })
-  /* on supprime la photo remplacée */
+    /* on supprime la photo remplacée */
     .then((sauce) => {
       if (req.file == null) {
         /* si la photo n'est pas changée (description de la photo modifié) */

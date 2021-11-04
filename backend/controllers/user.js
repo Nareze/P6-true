@@ -6,8 +6,8 @@ const cryptoJS = require("crypto-js");
 const dotenv = require("dotenv");
 dotenv.config();
 
-const toHash = require('crypto').randomBytes(64).toString('hex');
-console.log(toHash);    /* ajout aux clés secretes */
+const toHash = require("crypto").randomBytes(64).toString("hex");
+console.log(toHash); /* ajout aux clés secretes */
 
 exports.signup = (req, res, next) => {
   const emailtoCrypt = cryptoJS
@@ -37,28 +37,30 @@ exports.login = (req, res, next) => {
   console.log("contenu mail chiffré : " + emailtoCrypt);
 
   Users.findOne({ email: emailtoCrypt })
-  /* recherche d'un mail hashé avec la clé utilisé */
+    /* recherche d'un mail hashé avec la clé utilisé */
     .then((user) => {
       if (!user) {
         res.status(401).json({ message: "Utilisateur non trouvé" });
       }
 
-      return bcrypt
-        .compare(req.body.password, user.password)
-        /* bcrypt compare le mot de passe envoyé avec celui hashé */
-        .then((valid) => {
-          if (!valid) {
-            res.status(401).json({ message: "Mot de passe incorrect" });
-          }
-          res.status(200).json({
-            /* ajout d'un token lié au userid */
-            userId: user._id,
-            token: jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-              expiresIn: process.env.JWT_EXPIRATION_TIME,
-            }),
-          });
-        })
-        .catch((error) => res.status(500).json({ error }));
+      return (
+        bcrypt
+          .compare(req.body.password, user.password)
+          /* bcrypt compare le mot de passe envoyé avec celui hashé */
+          .then((valid) => {
+            if (!valid) {
+              res.status(401).json({ message: "Mot de passe incorrect" });
+            }
+            res.status(200).json({
+              /* ajout d'un token lié au userid */
+              userId: user._id,
+              token: jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+                expiresIn: process.env.JWT_EXPIRATION_TIME,
+              }),
+            });
+          })
+          .catch((error) => res.status(500).json({ error }))
+      );
     })
     .catch((error) => res.status(500).json({ error }));
 };
